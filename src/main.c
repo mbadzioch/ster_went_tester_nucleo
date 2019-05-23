@@ -15,12 +15,12 @@
 
 #define FILTER_LEN 32
 
-#define TH_HIGH 3000
-#define TH_LOW 2000
+#define TH_HIGH 1990
+#define TH_LOW 1800
 #define TH_ON 100
 
 
-uint16_t RegularConvData_Tab[FILTER_LEN];
+uint16_t RegularConvData_Tab[FILTER_LEN+1];
 
 void ADC1_Configure(void)
 {
@@ -112,7 +112,7 @@ void DMA1_Configure(void)
 
 
 uint32_t meas_buf;
-
+char bufek[8];
 int main()
 {
 	DelayInit();
@@ -131,12 +131,13 @@ int main()
 		while((DMA_GetFlagStatus(DMA1_FLAG_TC1)) == RESET );
 		/* Clear DMA TC flag */
 		DMA_ClearFlag(DMA1_FLAG_TC1);
-
+		meas_buf=0;
 		for (uint8_t i=0; i<FILTER_LEN; i++){
 			meas_buf+=RegularConvData_Tab[i];
 		}
 		meas_buf = meas_buf / FILTER_LEN;
-
+//		sprintf(bufek,"%d\n\r\n\r",RegularConvData_Tab[0]);
+//		PC_Debug(bufek);
 		if(meas_buf > TH_HIGH){
 			BRD_Set(boardSet_LED_GREEN,0);
 			BRD_Set(boardSet_LED_YELLOW,0);
